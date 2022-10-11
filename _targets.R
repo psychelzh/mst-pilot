@@ -11,18 +11,6 @@ pil <- import("PIL")
 new_session <- rembg$session_factory$new_session
 
 list(
-  # tar_target(
-  #   files_png, {
-  #     file_name <- fs::path("working", "face-png", fs::path_file(files_tif)) |>
-  #       fs::path_ext_set("png")
-  #     image_read(files_tif) |>
-  #       image_convert(format = "png") |>
-  #       image_write(file_name)
-  #     file_name
-  #   },
-  #   pattern = map(files_tif),
-  #   format = "file"
-  # ),
   tarchetypes::tar_files_input(
     files_origin_from,
     fs::dir_ls(fs::path("working", "face"), regexp = "from")
@@ -37,7 +25,8 @@ list(
   ),
   tar_target(
     frames,
-    (seq_along(files_origin_to) %% 2 + 1) * 10
+    # frame start from 0
+    ((seq_along(files_origin_to) - 1) %% 5 + 2) * 10 - 1
   ),
   tar_target(
     files_similar,
@@ -81,7 +70,7 @@ list(
     pattern = map(files_origin_novel),
     format = "file"
   ),
-  tar_target(
+  tarchetypes::tar_files(
     files_with_bg,
     c(files_similar, files_old, files_novel)
   ),
@@ -183,6 +172,23 @@ list(
     files_stim_place,
     resize_stimuli(files_rename_place, type = "place"),
     pattern = map(files_rename_place),
+    format = "file"
+  ),
+
+  # additional analysis
+  tar_target(test_frames, c(0, seq(9, 99, 10))),
+  tar_target(
+    files_test,
+    morph_from_file(
+      fs::path(
+        "working", "face-morphed-test",
+        sub("to", as.character(test_frames), fs::path_file(files_origin_to))
+      ),
+      files_origin_from,
+      files_origin_to,
+      test_frames
+    ),
+    pattern = cross(map(files_origin_from, files_origin_to), test_frames),
     format = "file"
   )
 )
