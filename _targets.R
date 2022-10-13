@@ -178,7 +178,7 @@ list(
   # additional analysis
   tar_target(test_frames, c(0, seq(9, 99, 10))),
   tar_target(
-    files_test,
+    files_test_homosex,
     morph_from_file(
       fs::path(
         "working", "face-morphed-test",
@@ -189,6 +189,28 @@ list(
       test_frames
     ),
     pattern = cross(map(files_origin_from, files_origin_to), test_frames),
+    format = "file"
+  ),
+  tarchetypes::tar_files_input(
+    files_test_from,
+    fs::dir_ls(fs::path("working", "face-all"), regexp = "from")
+  ),
+  tarchetypes::tar_files_input(
+    files_test_to,
+    fs::dir_ls(fs::path("working", "face-all"), regexp = "to")
+  ),
+  tar_target(
+    files_test,
+    morph_from_file(
+      fs::path(
+        "working", "face-morphed-all-test",
+        sub("to", as.character(test_frames), fs::path_file(files_test_to))
+      ),
+      files_test_from,
+      files_test_to,
+      test_frames
+    ),
+    pattern = cross(map(files_test_from, files_test_to), test_frames),
     format = "file"
   )
 )
