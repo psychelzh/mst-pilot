@@ -26,7 +26,7 @@ list(
   tar_target(
     frames,
     # frame start from 0
-    ((seq_along(files_origin_to) - 1) %% 5 + 2) * 10 - 1
+    ((seq_along(files_origin_to) - 1) %% 5 + 5) * 10 - 1
   ),
   tar_target(
     files_similar,
